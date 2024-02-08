@@ -12,11 +12,13 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class SkFinderCommand implements CommandExecutor {
+public class SkFinderCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -49,6 +51,14 @@ public class SkFinderCommand implements CommandExecutor {
     }
     public void searchFiles(CommandSender sender, String query) {
         searchFiles(sender, 1, query);
+    }
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        List<String> completions = new ArrayList<>();
+        if (args.length == 1) {
+            completions.add("search");
+            completions.add("reload");
+        }
+        return completions;
     }
 
     public void searchFiles(CommandSender sender, int page, String query) {
