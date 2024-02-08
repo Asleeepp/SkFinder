@@ -1,0 +1,9 @@
+name: SkFind
+version: '${version}'
+main: me.asleepp.skfind.SkFind
+api-version: '1.20'
+
+commands:
+  skfind:
+    permission: op
+    description: Find stuff in your Scripts!
