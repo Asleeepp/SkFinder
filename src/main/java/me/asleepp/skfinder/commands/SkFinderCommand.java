@@ -22,43 +22,55 @@ public class SkFinderCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length > 0) {
-            if (args[0].equalsIgnoreCase("search")) {
-                if (args.length > 1) {
-                    StringBuilder searchString = new StringBuilder();
-                    for (int i = 1; i < args.length; i++) {
-                        searchString.append(args[i]).append(" ");
-                    }
-                    searchFiles(sender, searchString.toString().trim());
-                    return true;
-                } else {
-                    sender.sendMessage("Usage: /" + label + " search <phrase>");
-                    return true;
+        if (args.length > 0 && args[0].equalsIgnoreCase("search")) {
+            if (args.length > 1) {
+                StringBuilder searchString = new StringBuilder();
+                for (int i = 1; i < args.length; i++) {
+                    searchString.append(args[i]).append(" ");
                 }
-            } else if (args[0].equalsIgnoreCase("reload")) {
-                if (sender.hasPermission("skfinder.reload")) {
-                    SkFinder.getInstance().reloadConfiguration();
-                    sender.sendMessage(ChatColor.GREEN + "Configuration reloaded.");
-                } else {
-                    sender.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
-                }
+                searchFiles(sender, searchString.toString().trim());
+                return true;
+            } else {
+                sender.sendMessage(ChatColor.RED + "Usage: /" + label + " search <phrase>");
                 return true;
             }
+        } else if (args.length > 0 && args[0].equalsIgnoreCase("searchpage")) {
+            if (args.length > 2) {
+                try {
+                    int page = Integer.parseInt(args[1]);
+                    String query = args[2];
+                    if (page > 0) {
+                        // Execute the search with the specified page number and query
+                        searchFiles(sender, page, query);
+                        return true;
+                    }
+                } catch (NumberFormatException e) {
+                    sender.sendMessage(ChatColor.RED + "Invalid page number.");
+                    return true;
+                }
+            }
+            sender.sendMessage(ChatColor.RED + "Usage: /" + label + " searchpage <page> <phrase>");
+            return true;
+        } else if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
+            SkFinder.getInstance().reloadConfiguration();
+            sender.sendMessage(ChatColor.GREEN + "Configuration reloaded!");
+            return true;
         }
+        return false;
+    }
 
-        sender.sendMessage("Usage: /" + label + " <search|reload>");
-        return true;
-    }
-    public void searchFiles(CommandSender sender, String query) {
-        searchFiles(sender, 1, query);
-    }
+    @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         List<String> completions = new ArrayList<>();
         if (args.length == 1) {
             completions.add("search");
+            completions.add("searchpage");
             completions.add("reload");
         }
         return completions;
+    }
+    public void searchFiles(CommandSender sender, String query) {
+        searchFiles(sender, 1, query);
     }
 
     public void searchFiles(CommandSender sender, int page, String query) {
